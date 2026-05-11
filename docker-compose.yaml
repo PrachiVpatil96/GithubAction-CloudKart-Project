@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+
+  frontend:
+    build: ./Frontend
+    container_name: prachi-frontend
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - backend
+
+    stdin_open: true
+    tty: true
+
+
+  backend:
+    build: ./Backend
+    container_name: prachi-backend
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_NAME: productsdb
+
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres:15
+    container_name: prachi-postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: productsdb
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+volumes:
+  postgres-data:

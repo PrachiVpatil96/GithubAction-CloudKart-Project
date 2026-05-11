@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS products (
+
+    id SERIAL PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL,
+
+    price NUMERIC(10,2) NOT NULL,
+
+    quantity INT NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
+
+INSERT INTO products (name, price, quantity)
+VALUES
+('Laptop', 55000, 5),
+('Keyboard', 1500, 10),
+('Mouse', 700, 20);
