@@ -22,9 +22,9 @@ jobs:
         working-directory: ./Frontend
         run: npm install
 
-      - name: Backend Validation
-        run: echo "Backend Build Successful"
-
+      - name: Build React App
+        working-directory: ./Frontend
+        run: npm run build
 
   backend-build:
     runs-on: ubuntu-latest
@@ -43,6 +43,5 @@ jobs:
         working-directory: ./Backend
         run: npm install
 
-      - name: Build React App
-        working-directory: ./Backend
-        run: npm run build
+      - name: Backend Validation
+        run: echo "Backend Build Successful"
