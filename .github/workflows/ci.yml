@@ -7,6 +7,7 @@ on:
 jobs:
   frontend-build:
     runs-on: ubuntu-latest
+    needs: frontend-build
 
     steps:
       - name: code-checkout
