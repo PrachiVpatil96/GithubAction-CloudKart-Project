@@ -45,3 +45,18 @@ jobs:
 
       - name: Backend Validation
         run: echo "Backend Build Successful"
+
+  database-job:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v
+
+      - name: Build PostgreSQL Docker Image
+        run: docker build -t prachi-postgres ./Database
+
+      - name: Database Validation
+        run: echo "PostgreSQL Database Image Built Successfully"
