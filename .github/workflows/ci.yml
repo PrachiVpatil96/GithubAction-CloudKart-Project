@@ -46,22 +46,7 @@ jobs:
       - name: Backend Validation
         run: echo "Backend Build Successful"
 
-  database-build:
-
-    runs-on: ubuntu-latest
-    needs: backend-build
-
-    steps:
-
-      - name: Checkout Repository
-        uses: actions/checkout@v6
-
-      - name: Build PostgreSQL Docker Image
-        run: docker build -t prachi-postgres ./Database
-
-      - name: Database Validation
-        run: echo "PostgreSQL Database Image Built Successfully"
-
+  
   docker-build:
     runs-on: ubuntu-latest
     needs: [frontend-build,backend-build,database-build]
@@ -75,6 +60,15 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build-Database-Image
+        working-directory: ./Database
+        run: docker image build -t prachi-postgres:1.0 .
+
+      - name: Tagging and Pusing into DockerHub
+        run : |
+              docker image tag prachi-postgres:1.0 ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
+              docker push ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
 
       - name: Buil-frontend-Image
         working-directory: ./Frontend
@@ -93,6 +87,7 @@ jobs:
         run : |
               docker image tag backend:1.0 ${{ vars.DOCKER_USERNAME }}/backend:latest
               docker push ${{ vars.DOCKER_USERNAME }}/backend:latest
+      
 
 
       
