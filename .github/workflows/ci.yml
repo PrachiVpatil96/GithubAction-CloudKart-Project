@@ -49,11 +49,12 @@ jobs:
   database-job:
 
     runs-on: ubuntu-latest
-
+    needs: backend-build
+    
     steps:
 
       - name: Checkout Repository
-        uses: actions/checkout@v
+        uses: actions/checkout@v6
 
       - name: Build PostgreSQL Docker Image
         run: docker build -t prachi-postgres ./Database
