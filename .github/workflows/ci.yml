@@ -76,4 +76,9 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Buil-frontend-Image
+        working-directory: ./Frontend
+        run: docker image build -t frontend:1.0
+
+
       
