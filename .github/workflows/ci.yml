@@ -83,6 +83,7 @@ jobs:
       - name: Tagging and Pusing into DockerHub
         run : |
               docker image tag frontend:1.0 ${{ vars.DOCKER_USERNAME }}/frontend:latest
+              docker push ${{ vars.DOCKER_USERNAME }}/frontend:latest
 
 
       
