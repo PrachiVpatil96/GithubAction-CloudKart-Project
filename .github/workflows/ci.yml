@@ -78,7 +78,7 @@ jobs:
 
       - name: Buil-frontend-Image
         working-directory: ./Frontend
-        run: docker image build -t frontend:1.0
+        run: docker image build -t frontend:1.0 .
 
 
       
