@@ -80,5 +80,9 @@ jobs:
         working-directory: ./Frontend
         run: docker image build -t frontend:1.0 .
 
+      - name: Tagging and Pusing into DockerHub
+        run : |
+              docker image tag frontend:1.0 ${{ vars.DOCKER_USERNAME }}/frontend:latest
+
 
       
