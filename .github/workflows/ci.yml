@@ -32,30 +32,40 @@ jobs:
           name: my-front-node-artifact
           path: Frontend/build
 
-  # backend-build:
-  #   runs-on: ubuntu-latest
-  #   needs: frontend-build
+  backend-build:
+    runs-on: ubuntu-latest
+    needs: frontend-build
 
-  #   steps:
-  #     - name: code-checkout
-  #       uses: actions/checkout@v6
+    steps:
+      - name: code-checkout
+        uses: actions/checkout@v6
 
-  #     - name: Use Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20.x'
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
 
-  #     - name: Install dependencies
-  #       working-directory: ./Backend
-  #       run: npm install
+      - name: Install dependencies
+        working-directory: ./Backend
+        run: npm install
 
-  #     - name: Backend Validation
-  #       run: echo "Backend Build Successful"
+      - name: Build React App
+        working-directory: ./Backend
+        run: npm run build
+    
+      - name: Upload Backend build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: my-back-node-artifact
+          path: Backend/build
+
+      - name: Backend Validation
+        run: echo "Backend Build Successful"
 
   
   docker-build:
     runs-on: ubuntu-latest
-    needs: [frontend-build]
+    needs: [frontend-build,backend-build]
 
     steps:
       - name: code-checkout
@@ -69,6 +79,15 @@ jobs:
 
       - name: Verify files
         run: ls -la Frontend/build
+
+      - name: Download backend artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: my-back-node-artifact
+          path: Backend/build
+
+      - name: Verify files
+        run: ls -la Backend/build
         
 
       - name: Login to Docker Hub
@@ -95,14 +114,14 @@ jobs:
               docker image tag frontend:1.0 ${{ vars.DOCKER_USERNAME }}/frontend:latest
               docker push ${{ vars.DOCKER_USERNAME }}/frontend:latest
 
-      # - name: Build-Backend-Image
-      #   working-directory: ./Backend
-      #   run: docker image build -t backend:1.0 .
+      - name: Build-Backend-Image
+        working-directory: ./Backend
+        run: docker image build -t backend:1.0 .
 
-      # - name: Tagging and Pusing into DockerHub
-      #   run : |
-      #         docker image tag backend:1.0 ${{ vars.DOCKER_USERNAME }}/backend:latest
-      #         docker push ${{ vars.DOCKER_USERNAME }}/backend:latest
+      - name: Tagging and Pusing into DockerHub
+        run : |
+              docker image tag backend:1.0 ${{ vars.DOCKER_USERNAME }}/backend:latest
+              docker push ${{ vars.DOCKER_USERNAME }}/backend:latest
       
 
 
