@@ -1,0 +1,73 @@
+name: Node.js CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build-app:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Checkout repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Install Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Install dependencies
+      - name: Install Dependencies
+        working-directory: ./Frontend
+        run: npm Install
+
+      # Build application
+      - name: Build Application
+        working-directory: ./Frontend
+        run: npm run build
+
+      # Upload artifacts
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app-build
+          path: |
+            dist
+            package.json
+            package-lock.json
+
+  # docker-build:
+  #   needs: build-app
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+
+  #     # Checkout repository
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+
+  #     # Download artifacts
+  #     - name: Download Build Artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: node-app-build
+
+  #     # Verify downloaded files
+  #     - name: List files
+  #       run: ls -la
+
+  #     # Build Docker image
+  #     - name: Build Docker Image
+  #       run: |
+  #         docker build -t my-node-app .
+
+  #     # Verify image
+  #     - name: Verify Docker Image
+  #       run: docker images
+

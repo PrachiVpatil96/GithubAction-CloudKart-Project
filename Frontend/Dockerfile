@@ -1,13 +1,19 @@
-FROM node:20
+# FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-COPY package.json .
+# Copy package files first
+COPY package*.json ./
 
-RUN npm install
+# Install only production dependencies
+RUN npm ci --omit=dev
 
-COPY . .
+# Copy built application from artifact
+COPY dist ./dist
 
+# Expose application port
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Start application
+CMD ["node", "dist/index.js"]
