@@ -89,6 +89,7 @@ jobs:
               docker push ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
 
       - name: Buil-frontend-Image
+        working-directory: ./Frontend
         run: docker image build -t frontend:1.0 .
 
       - name: Tagging and Pusing into DockerHub
