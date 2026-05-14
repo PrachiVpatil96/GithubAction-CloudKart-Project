@@ -42,32 +42,32 @@ jobs:
             package.json
             package-lock.json
 
-  # docker-build:
-  #   needs: build-app
-  #   runs-on: ubuntu-latest
+  docker-build:
+    needs: build-app
+    runs-on: ubuntu-latest
 
-  #   steps:
+    steps:
 
-  #     # Checkout repository
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
+      # Checkout repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  #     # Download artifacts
-  #     - name: Download Build Artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: node-app-build
+      # Download artifacts
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app-build
 
-  #     # Verify downloaded files
-  #     - name: List files
-  #       run: ls -la
+      # Verify downloaded files
+      - name: List files
+        run: ls -la
 
-  #     # Build Docker image
-  #     - name: Build Docker Image
-  #       run: |
-  #         docker build -t my-node-app .
+      # Build Docker image
+      - name: Build Docker Image
+        run: |
+          docker build -t my-node-app .
 
-  #     # Verify image
-  #     - name: Verify Docker Image
-  #       run: docker images
+      # Verify image
+      - name: Verify Docker Image
+        run: docker images
 
