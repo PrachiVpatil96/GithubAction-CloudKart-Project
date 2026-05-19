@@ -59,3 +59,16 @@ jobs:
         run: |
           docker push \
           ${{ vars.DOCKER_USERNAME }}/prachi-backend:latest
+
+
+       # Start Full 3-Tier Application
+      - name: Run Docker Compose
+        run: docker compose up -d
+
+      # Verify Running Containers
+      - name: Check Containers
+        run: docker ps
+
+      # Backend Health Check
+      - name: Test Backend Health
+        run: curl http://localhost:5000/health
