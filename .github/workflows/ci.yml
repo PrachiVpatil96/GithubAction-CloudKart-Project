@@ -26,12 +26,12 @@ jobs:
       # Build Datavase Image
       - name: Build Database Docker Image
         run: |
-          docker build -t ${{ vars.DOCKER_USERNAME }}/Database:latest ./Database
+          docker build -t ${{ vars.DOCKER_USERNAME }}/database:latest ./Database
 
       # Push Frontend Image
       - name: Push Database Docker Image
         run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/}/Database:latest:latest
+          docker push ${{ vars.DOCKER_USERNAME }}/}/database:latest
 
       # Build Frontend Image
       - name: Build Frontend Docker Image
