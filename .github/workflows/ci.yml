@@ -31,7 +31,7 @@ jobs:
       # Push Frontend Image
       - name: Push Database Docker Image
         run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/}/database:latest
+          docker push ${{ vars.DOCKER_USERNAME }}/database:latest
 
       # Build Frontend Image
       - name: Build Frontend Docker Image
