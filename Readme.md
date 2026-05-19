@@ -742,3 +742,6 @@ Prachi Patil
 GitHub Repository:
 
 [https://github.com/PrachiVpatil96/GithubAction-CloudKart-Project](https://github.com/PrachiVpatil96/GithubAction-CloudKart-Project)
+
+![FrontEnd](image.png)
+![Backend](image-1.png)
