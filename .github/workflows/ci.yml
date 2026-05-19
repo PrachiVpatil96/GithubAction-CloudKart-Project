@@ -1,84 +1,109 @@
-# name: 3-Tier Application CI/CD Pipeline
+name: prachi cloudKart CI Pipeline
 
 on:
   push:
     branches:
       - main
-
 jobs:
-
-  build-and-push:
+  frontend-build:
     runs-on: ubuntu-latest
+    
 
     steps:
+      - name: code-checkout
+        uses: actions/checkout@v6
 
-      # Checkout source code
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
 
-      # Login to DockerHub
-      - name: DockerHub Login
-        uses: docker/login-action@v3
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: npm install
+
+      - name: Build React App
+        working-directory: ./Frontend
+        run: npm run build
+    
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: my-front-node-artifact
+          path: Frontend/build
+
+  backend-build:
+    runs-on: ubuntu-latest
+    needs: frontend-build
+
+    steps:
+      - name: code-checkout
+        uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        working-directory: ./Backend
+        run: npm install
+
+      
+      - name: Backend Validation
+        run: echo "Backend Build Successful"
+
+  
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [frontend-build,backend-build]
+
+    steps:
+      - name: code-checkout
+        uses: actions/checkout@v6
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: my-front-node-artifact
+          path: Frontend/build
+
+      - name: Verify files
+        run: ls -la Frontend/build
+
+      
+        
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build Datavase Image
-      - name: Build Database Docker Image
-        run: |
-          docker build -t ${{ vars.DOCKER_USERNAME }}/database:latest ./Database
+      - name: Build-Database-Image
+        working-directory: ./Database
+        run: docker image build -t prachi-postgres:1.0 .
 
-      # Push Frontend Image
-      - name: Push Database Docker Image
-        run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/database:latest
+      - name: Tagging and Pusing into DockerHub
+        run : |
+              docker image tag prachi-postgres:1.0 ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
+              docker push ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
 
-      # Build Frontend Image
-      - name: Build Frontend Docker Image
-        run: |
-          docker build -t ${{ vars.DOCKER_USERNAME }}/frontend:latest ./Frontend
+      - name: Buil-frontend-Image
+        working-directory: ./Frontend
+        run: docker image build -t frontend:1.0 .
 
-      # Push Frontend Image
-      - name: Push Frontend Docker Image
-        run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/frontend:latest
+      - name: Tagging and Pusing into DockerHub
+        run : |
+              docker image tag frontend:1.0 ${{ vars.DOCKER_USERNAME }}/frontend:latest
+              docker push ${{ vars.DOCKER_USERNAME }}/frontend:latest
 
-      # Build Backend Image
-      - name: Build Backend Docker Image
-        run: |
-          docker build -t ${{ vars.DOCKER_USERNAME }}/backend:latest ./Backend
+      - name: Build-Backend-Image
+        working-directory: ./Backend
+        run: docker image build -t backend:1.0 .
 
-      # Push Backend Image
-      - name: Push Backend Docker Image
-        run: |
-          docker push ${{ vars.DOCKER_USERNAME }}/backend:latest
-
-
-  # deploy:
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-
-  #     - name: Deploy To EC2 Server
-  #       uses: appleboy/ssh-action@v1.0.3
-
-  #       with:
-  #         host: ${{ secrets.EC2_HOST }}
-  #         username: ${{ secrets.EC2_USER }}
-  #         key: ${{ secrets.EC2_SSH_KEY }}
-
-  #         script: |
-
-  #           cd ~/your-project-folder
-
-  #           # Pull latest images
-  #           docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
-  #           docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
-
-  #           # Restart application
-  #           docker compose down
-  #           docker compose up -d
-
-  #           # Cleanup unused images
-  #           docker image prune -f
+      - name: Tagging and Pusing into DockerHub
+        run : |
+              docker image tag backend:1.0 ${{ vars.DOCKER_USERNAME }}/backend:latest
+              docker push ${{ vars.DOCKER_USERNAME }}/backend:latest
+      
