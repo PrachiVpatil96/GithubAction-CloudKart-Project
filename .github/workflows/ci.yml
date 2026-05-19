@@ -1,109 +1,61 @@
-name: prachi cloudKart CI Pipeline
+name: CloudKart CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
+
 jobs:
-  frontend-build:
+
+  build-and-push:
+
     runs-on: ubuntu-latest
-    
 
     steps:
-      - name: code-checkout
-        uses: actions/checkout@v6
 
-      - name: Use Node.js
+      # Checkout Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Setup Node.js 24
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: 24
 
-      - name: Install dependencies
-        working-directory: ./Frontend
-        run: npm install
+      # Validate Docker Compose File
+      - name: Validate Docker Compose
+        run: docker compose config
 
-      - name: Build React App
-        working-directory: ./Frontend
-        run: npm run build
-    
-      - name: Upload frontend build artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: my-front-node-artifact
-          path: Frontend/build
-
-  backend-build:
-    runs-on: ubuntu-latest
-    needs: frontend-build
-
-    steps:
-      - name: code-checkout
-        uses: actions/checkout@v6
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
-      - name: Install dependencies
-        working-directory: ./Backend
-        run: npm install
-
-      
-      - name: Backend Validation
-        run: echo "Backend Build Successful"
-
-  
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: [frontend-build,backend-build]
-
-    steps:
-      - name: code-checkout
-        uses: actions/checkout@v6
-
-      - name: Download frontend artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: my-front-node-artifact
-          path: Frontend/build
-
-      - name: Verify files
-        run: ls -la Frontend/build
-
-      
-        
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v4
+      # Login to DockerHub
+      - name: DockerHub Login
+        uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build-Database-Image
-        working-directory: ./Database
-        run: docker image build -t prachi-postgres:1.0 .
+      # Build Frontend Docker Image
+      - name: Build Frontend Image
+        run: |
+          docker build \
+          -t ${{ vars.DOCKER_USERNAME }}/prachi-frontend:latest \
+          ./Frontend
 
-      - name: Tagging and Pusing into DockerHub
-        run : |
-              docker image tag prachi-postgres:1.0 ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
-              docker push ${{ vars.DOCKER_USERNAME }}/prachi-postgres:latest
+      # Build Backend Docker Image
+      - name: Build Backend Image
+        run: |
+          docker build \
+          -t ${{ vars.DOCKER_USERNAME }}/prachi-backend:latest \
+          ./Backend
 
-      - name: Buil-frontend-Image
-        working-directory: ./Frontend
-        run: docker image build -t frontend:1.0 .
+      # Push Frontend Docker Image
+      - name: Push Frontend Image
+        run: |
+          docker push \
+          ${{ vars.DOCKER_USERNAME }}/prachi-frontend:latest
 
-      - name: Tagging and Pusing into DockerHub
-        run : |
-              docker image tag frontend:1.0 ${{ vars.DOCKER_USERNAME }}/frontend:latest
-              docker push ${{ vars.DOCKER_USERNAME }}/frontend:latest
-
-      - name: Build-Backend-Image
-        working-directory: ./Backend
-        run: docker image build -t backend:1.0 .
-
-      - name: Tagging and Pusing into DockerHub
-        run : |
-              docker image tag backend:1.0 ${{ vars.DOCKER_USERNAME }}/backend:latest
-              docker push ${{ vars.DOCKER_USERNAME }}/backend:latest
-      
+      # Push Backend Docker Image
+      - name: Push Backend Image
+        run: |
+          docker push \
+          ${{ vars.DOCKER_USERNAME }}/prachi-backend:latest
