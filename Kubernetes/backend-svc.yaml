@@ -7,7 +7,7 @@ metadata:
   namespace: cloudkart
 
 spec:
-  type: ClusterIP
+  type: NodePort
 
   selector:
     app: backend
