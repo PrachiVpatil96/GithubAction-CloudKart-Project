@@ -64,7 +64,7 @@ jobs:
           ${{ vars.DOCKER_USERNAME }}/prachi-backend:latest
 
 
-      #  # Start Full 3-Tier Application
+      #  # Start Full 3-Tier Application.
       # - name: Run Docker Compose
       #   run: docker compose up -d
 
