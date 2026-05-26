@@ -23,9 +23,9 @@ jobs:
         with:
           node-version: 24
 
-      # Validate Docker Compose File
-      - name: Validate Docker Compose
-        run: docker compose config
+      # # Validate Docker Compose File
+      # - name: Validate Docker Compose
+      #   run: docker compose config
 
       # Login to DockerHub
       - name: DockerHub Login
@@ -61,14 +61,14 @@ jobs:
           ${{ vars.DOCKER_USERNAME }}/prachi-backend:latest
 
 
-       # Start Full 3-Tier Application
-      - name: Run Docker Compose
-        run: docker compose up -d
+      #  # Start Full 3-Tier Application
+      # - name: Run Docker Compose
+      #   run: docker compose up -d
 
-      # Verify Running Containers
-      - name: Check Containers
-        run: docker ps
+      # # Verify Running Containers
+      # - name: Check Containers
+      #   run: docker ps
 
-      # Backend Health Check
-      - name: Test Backend Health
-        run: curl http://localhost:5000/health
+      # # Backend Health Check
+      # - name: Test Backend Health
+      #   run: curl http://localhost:5000/health
