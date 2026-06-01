@@ -26,9 +26,6 @@ jobs:
         with:
           node-version: 24
 
-      # # Validate Docker Compose File
-      # - name: Validate Docker Compose
-      #   run: docker compose config
 
       # Login to DockerHub
       - name: DockerHub Login
