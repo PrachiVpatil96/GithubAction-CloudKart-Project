@@ -120,7 +120,7 @@ Docker Compose is used only for local testing and verification.
 Start application:
 
 ```bash
-docker compose up -d
+docker compose up --build 
 ```
 
 Check running containers:
